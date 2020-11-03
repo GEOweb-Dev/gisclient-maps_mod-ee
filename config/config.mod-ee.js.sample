@@ -1,0 +1,27 @@
+clientConfig.CLIENT_COMPONENTS.push("gisclient-maps_mod-ee:mod-ee_Control:2:tools");
+clientConfig.CLIENT_COMPONENTS.push("gisclient-maps_mod-ee:mod-ee_Functions:99:zhidden");
+
+clientConfig.MOD_EE_LINE_LAYERS = [];
+clientConfig.MOD_EE_LINE_SEARCH_FIELDS = [];
+clientConfig.MOD_EE_LINE_SEARCH_LAYERS = [];
+clientConfig.MOD_EE_SUBSTATION_LAYERS = [];
+clientConfig.MOD_EE_SUBSTATION_SEARCH_FIELDS = [];
+clientConfig.MOD_EE_SUBSTATION_SEARCH_LAYERS = [];
+clientConfig.MOD_EE_CIRCUIT_FIELD_ID = null;
+clientConfig.MOD_EE_CIRCUIT_FIELD_LABEL = null;
+clientConfig.MOD_EE_SECTION_FIELD_ID = null;
+clientConfig.MOD_EE_SECTION_FIELD_LABEL = null;
+clientConfig.MOD_EE_CIRCUIT_LAYERS = {};
+clientConfig.MOD_EE_SECTION_LAYERS = {};
+clientConfig.MOD_EE_CIRCUIT_COLOR = '#FFA500';
+clientConfig.MOD_EE_CIRCUIT_WIDTH = 5;
+clientConfig.MOD_EE_SECTION_COLOR = '#FF00FF';
+clientConfig.MOD_EE_SECTION_WIDTH = 5;
+// **** Configurazione per ricerca POD
+clientConfig.MOD_EE_POD_LAYERS = [];
+clientConfig.MOD_EE_POD_SEARCH_FIELDS_SINGLE = [];
+clientConfig.MOD_EE_POD_SEARCH_FIELDS_LIST = [];
+clientConfig.MOD_EE_POD_SEARCH_LAYERS = [];
+clientConfig.MOD_EE_POD_RELATION = null;
+clientConfig.MOD_EE_POD_COLOR = '#0000FF';
+clientConfig.MOD_EE_POD_WIDTH = 5;
