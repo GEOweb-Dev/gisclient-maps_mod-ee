@@ -438,7 +438,7 @@ window.GCComponents.Functions.modEEHighlight = function (layerName, idField, idV
             // **** bring Vector layer on top
             var origLayerIndex = GisClientMap.map.getLayerIndex(hilightLayer);
             var maxIndex = GisClientMap.map.getLayerIndex(GisClientMap.map.layers[GisClientMap.map.layers.length -1]);
-            if(origLayerIndex < maxIndex) GisClientMap.map.raiseLayer(hilightLayer, (maxIndex - origLayerIndex -1));
+            if(origLayerIndex < maxIndex) GisClientMap.map.raiseLayer(hilightLayer, (maxIndex - origLayerIndex));
             GisClientMap.map.resetLayersZIndex();
 
             loadingControl.minimizeControl();
