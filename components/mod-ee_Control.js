@@ -122,6 +122,7 @@ window.GCComponents["Layers"].addLayer('layer-ee_circuit-highlight', {
         if (layerExtent) {
             this.map.zoomToExtent(layerExtent);
         }
+        window.GCComponents.Functions.modEESectionsPanel(this);
     }
 });
 
@@ -318,6 +319,7 @@ window.GCComponents["Layers"].addLayer('layer-ee_pod-highlight', {
             var selectPod = this.map.getControlsBy('gc_id', 'control-mod-ee-selectpod')[0];
             selectPod.activate();
         }
+        window.GCComponents.Functions.modEESectionsPanel(null);
     }
 });
 
@@ -414,7 +416,33 @@ window.GCComponents["Controls"].addControl('control-mod-ee-toolbar', function(ma
             ];
 
             this.addControls(controls);
-            OpenLayers.Control.Panel.prototype.draw.apply(this);
+            OpenLayers.Control.Panel.prototype.draw.apply(this)
+        },
+        redraw: function () {
+            OpenLayers.Control.Panel.prototype.redraw.apply(this);
+            var sectPanel = document.createElement("div");
+            sectPanel.setAttribute('id', 'mod_ee_circuit_panel');
+            this.div.appendChild(sectPanel);
+            var sectPanelHeader = document.createElement("div");
+            sectPanelHeader.setAttribute('id', 'mod_ee_circuit_panel_header');
+            sectPanelHeader.innerHTML = '<a href="#" id="ee-mod_panel_toggle"><span id="ee-mod_panel_toggle_span" class="icon-hide-panel"></span></a><span>Circuito Selezionato</span>'
+            sectPanel.appendChild(sectPanelHeader);
+            var sectPanelContent = document.createElement("div");
+            sectPanelContent.setAttribute('id', 'mod_ee_circuit_panel_content');
+            sectPanel.appendChild(sectPanelContent);
+            $("#mod_ee_circuit_panel_header a").click(function() {
+                event.stopPropagation();
+                if ($("#ee-mod_panel_toggle_span").hasClass('icon-hide-panel')) {
+                    $("#ee-mod_panel_toggle_span").removeClass('icon-hide-panel');
+                    $("#ee-mod_panel_toggle_span").addClass('icon-show-panel');
+                    $('#mod_ee_circuit_panel_content').css('display', 'none');
+                }
+                else {
+                    $("#ee-mod_panel_toggle_span").removeClass('icon-show-panel');
+                    $("#ee-mod_panel_toggle_span").addClass('icon-hide-panel');
+                    $('#mod_ee_circuit_panel_content').css('display', 'block');
+                }
+            });
         }
     })
 });

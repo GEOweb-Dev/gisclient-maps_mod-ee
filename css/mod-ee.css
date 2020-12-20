@@ -50,3 +50,65 @@
     overflow: hidden;
     text-indent: -9999px;
 }
+
+#mod_ee_circuit_panel {
+    display: none;
+    text-align: center;
+    color: #FFFFFF;
+    padding: 15px;
+}
+
+#mod_ee_circuit_panel a {
+    color: #FFFFFF;
+}
+
+#mod_ee_circuit_panel_content div {
+    display: flow-root;
+}
+
+
+#mod_ee_circuit_panel_content span.circuit_data_header {
+    float: left;
+}
+
+#mod_ee_circuit_panel_content span.circuit_data_content {
+    float: right;
+}
+
+#mod_ee_circuit_panel_header {
+    margin-bottom: : 5px;
+}
+
+#mod_ee_circuit_panel_header span.icon-hide-panel {
+    float: left;
+    display: inline-block;
+    color: #FFFFFF;
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+    margin-right:5px;
+    line-height: 14px;
+    vertical-align: text-top;
+    background-image: url("../../resources/img/glyphicons-halflings-white.png");
+    background-repeat: no-repeat;
+    background-position: -312px -120px;
+    overflow: hidden;
+    text-indent: -9999px;
+}
+
+#mod_ee_circuit_panel_header span.icon-show-panel {
+    float: left;
+    display: inline-block;
+    color: #FFFFFF;
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+    margin-right:5px;
+    line-height: 14px;
+    vertical-align: text-top;
+    background-image: url("../../resources/img/glyphicons-halflings-white.png");
+    background-repeat: no-repeat;
+    background-position: -456px -72px;
+    overflow: hidden;
+    text-indent: -9999px;
+}

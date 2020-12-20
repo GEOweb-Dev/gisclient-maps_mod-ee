@@ -415,7 +415,7 @@ window.GCComponents.Functions.modEEHighlight = function (layerName, idField, idV
             var selectPod = GisClientMap.map.getControlsBy('gc_id', 'control-mod-ee-selectpod')[0];
             selectPod.deactivate();
 
-            var features = [], len = response.length, result, i, geometry, feature, lastObjId = null;
+            var features = [], sections=[], len = response.length, result, i, geometry, feature, lastObjId = null;
             for(i = 0; i < len; i++) {
                 result = response[i];
                 if (result.gc_objid != lastObjId) {
@@ -426,12 +426,17 @@ window.GCComponents.Functions.modEEHighlight = function (layerName, idField, idV
                     feature = new OpenLayers.Feature.Vector(geometry, result);
                     feature.featureTypeName = layerName;
                     features.push(feature);
+                    // **** Retrieve sections list on selection
+                    if (result[clientConfig.MOD_EE_SECTION_FIELD_ID] != null && sections.indexOf(result[clientConfig.MOD_EE_SECTION_FIELD_ID]) < 0) {
+                        sections.push(result[clientConfig.MOD_EE_SECTION_FIELD_ID]);
+                    }
                 }
             }
 
             hilightLayer.destroyFeatures();
             hilightLayer.dataTable = response;
             hilightLayer.relationName = eeRelation;
+            hilightLayer.sectionsList = sections;
             hilightLayer.addFeatures(features);
             hilightLayer.refresh();
 
@@ -447,6 +452,46 @@ window.GCComponents.Functions.modEEHighlight = function (layerName, idField, idV
             loadingControl.minimizeControl();
         }
     });
+};
+
+window.GCComponents.Functions.modEESectionsPanel = function (layer) {
+    if (layer == null) {
+        $('#mod_ee_circuit_panel_content').html('');
+        $('#mod_ee_circuit_panel').css('display', 'none');
+        GisClientMap.map.getLayersByName('layer-ee_circuit-highlight')[0].destroyFeatures();
+        GisClientMap.map.getLayersByName('layer-ee_section-highlight')[0].destroyFeatures();
+        return;
+    }
+    var panelContent = '';
+    var fType = GisClientMap.getFeatureType(layer.features[0].featureTypeName);
+    var circuitAttr = layer.features[0].attributes;
+    var sectionHeader = '';
+    for (var i=0; i<fType.properties.length; i++) {
+        if (clientConfig.MOD_EE_LINE_SEARCH_FIELDS.some(function(arrVal) {
+            var eePropData = arrVal.split(':');
+            return fType.properties[i].name === eePropData[0];
+            })) {
+            panelContent += '<div><span class="circuit_data_header">' + fType.properties[i].header + '</span><span class="circuit_data_content">' + circuitAttr[fType.properties[i].name] + '</span></div>';
+        }
+        if (fType.properties[i].name === clientConfig.MOD_EE_SECTION_FIELD_LABEL) {
+            var sectionHeader = fType.properties[i].header;
+        }
+    }
+    for (var i=0; i<layer.sectionsList.length; i++) {
+        panelContent += '<div><span class="circuit_data_header">' + sectionHeader + '</span><span class="circuit_data_content">' + '<a href="#" id="mod_ee_circuit_panel_section_'+layer.sectionsList[i]+'" filterid="'+layer.sectionsList[i]+'" class="olControlItemInactive olButton">'+layer.sectionsList[i]+'</a></span></div>';
+    }
+    $('#mod_ee_circuit_panel_content').html(panelContent);
+    $("#mod_ee_circuit_panel_content a").click(function() {
+        event.stopPropagation();
+        var filterId = this.getAttribute('filterid');
+        $("#mod_ee_circuit_panel_content a").removeClass("olControlItemActive");
+        $("#mod_ee_circuit_panel_content a").addClass("olControlItemInactive");
+        $(this).removeClass("olControlItemInactive");
+        $(this).addClass("olControlItemActive");
+        window.GCComponents.Functions.modEEHighlight(layer.features[0].featureTypeName,clientConfig.MOD_EE_SECTION_FIELD_ID,filterId,'layer-ee_section-highlight');
+    });
+    GisClientMap.map.getLayersByName('layer-ee_section-highlight')[0].destroyFeatures();
+    $('#mod_ee_circuit_panel').css('display', 'block');
 };
 
 window.GCComponents.Functions.modEERemoveFeatureFromLayer = function (evt) {
@@ -490,13 +535,15 @@ window.GCComponents.Functions.modEEFilter = function (layerName, idField, idValu
 window.GCComponents.Functions.modEEClear = function() {
     var loadingControl = GisClientMap.map.getControlsByClass('OpenLayers.Control.LoadingPanel')[0];
     loadingControl.maximizeControl();
-    GisClientMap.map.getLayersByName('layer-ee_circuit-highlight')[0].destroyFeatures();
-    GisClientMap.map.getLayersByName('layer-ee_section-highlight')[0].destroyFeatures();
+    //GisClientMap.map.getLayersByName('layer-ee_circuit-highlight')[0].destroyFeatures();
+    //GisClientMap.map.getLayersByName('layer-ee_section-highlight')[0].destroyFeatures();
     GisClientMap.map.getLayersByName('layer-ee_pod-highlight')[0].dataTable = [];
     GisClientMap.map.getLayersByName('layer-ee_pod-highlight')[0].destroyFeatures();
 
     var selectPod = GisClientMap.map.getControlsBy('gc_id', 'control-mod-ee-selectpod')[0];
     selectPod.deactivate();
+
+    window.GCComponents.Functions.modEESectionsPanel(null);
 
     var eeLayers = clientConfig.MOD_EE_LINE_LAYERS.concat(clientConfig.MOD_EE_SUBSTATION_LAYERS);
     var eeLayersStr = eeLayers.join();
