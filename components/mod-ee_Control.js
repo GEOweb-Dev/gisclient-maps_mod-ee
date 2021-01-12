@@ -207,6 +207,7 @@ window.GCComponents["Layers"].addLayer('layer-ee_section-highlight', {
         if (layerExtent) {
             this.map.zoomToExtent(layerExtent);
         }
+        window.GCComponents.Functions.modEESectionsPanel(this, true);
     }
 });
 

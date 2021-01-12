@@ -66,6 +66,12 @@
     display: flow-root;
 }
 
+#mod_ee_circuit_panel_content div.circuit_section_container {
+    border: 1px solid white;
+    border-radius: 5px;
+    margin-bottom: 2px;
+    padding: 5px;
+}
 
 #mod_ee_circuit_panel_content span.circuit_data_header {
     float: left;
