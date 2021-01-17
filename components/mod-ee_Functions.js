@@ -473,7 +473,12 @@ window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
                 var eePropData = arrVal.split(':');
                 return fType.properties[i].name === eePropData[0];
                 })) {
-                sectionPanelContent +='<div class="section_display_field"><span class="circuit_data_header">' + fType.properties[i].header + '</span><span class="circuit_data_content">' + circuitAttr[fType.properties[i].name] + '</span></div>';
+                var format = typeof(fType.properties[i].fieldFormat) != 'undefined'?fType.properties[i].fieldFormat:null;
+                var value = circuitAttr[fType.properties[i].name];
+                if (format && typeof(value) != 'undefined') {
+                    value = sprintf(format, value);
+                }
+                sectionPanelContent +='<div class="section_display_field"><span class="circuit_data_header">' + fType.properties[i].header + '</span><span class="circuit_data_content">' + value + '</span></div>';
             }
             if (fType.properties[i].name === clientConfig.MOD_EE_SECTION_FIELD_ID) {
                 var sectionId = circuitAttr[fType.properties[i].name];
@@ -489,7 +494,12 @@ window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
                 var eePropData = arrVal.split(':');
                 return fType.properties[i].name === eePropData[0];
                 })) {
-                panelContent += '<div><span class="circuit_data_header">' + fType.properties[i].header + '</span><span class="circuit_data_content">' + circuitAttr[fType.properties[i].name] + '</span></div>';
+                var format = typeof(fType.properties[i].fieldFormat) != 'undefined'?fType.properties[i].fieldFormat:null;
+                var value = circuitAttr[fType.properties[i].name];
+                if (format && typeof(value) != 'undefined') {
+                    value = sprintf(format, value);
+                }
+                panelContent += '<div><span class="circuit_data_header">' + fType.properties[i].header + '</span><span class="circuit_data_content">' + value + '</span></div>';
             }
             if (fType.properties[i].name === clientConfig.MOD_EE_SECTION_FIELD_LABEL) {
                 var sectionHeader = fType.properties[i].header;
