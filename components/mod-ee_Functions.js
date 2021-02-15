@@ -621,14 +621,15 @@ window.GCComponents.Functions.modEEShowRelation = function (featureType, dataTab
     for(i = 0; i < len; i++) {
         property = fType.properties[i];
 
-        if(!property.relationName || property.relationName != relationName) continue;
-        fields.push({field_name:property.name,
-                     title:property.header,
-                     type:property.fieldType,
-                     format:typeof(property.fieldFormat) != 'undefined'?property.fieldFormat:null
-                    });
-        title = property.header || property.name;
-        table += '<th>'+title+'</th>';
+        if(property.relationName == relationName || clientConfig.MOD_EE_POD_DISPLAY_FIELDS.indexOf(property.name) >= 0) {
+            fields.push({field_name:property.name,
+                         title:property.header,
+                         type:property.fieldType,
+                         format:typeof(property.fieldFormat) != 'undefined'?property.fieldFormat:null
+                        });
+            title = property.header || property.name;
+            table += '<th>'+title+'</th>';
+        }
     }
     table += '</tr></thead><tbody>';
 

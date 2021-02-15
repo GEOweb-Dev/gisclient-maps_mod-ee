@@ -25,5 +25,6 @@ clientConfig.MOD_EE_POD_SEARCH_FIELDS_SINGLE = [];
 clientConfig.MOD_EE_POD_SEARCH_FIELDS_LIST = [];
 clientConfig.MOD_EE_POD_SEARCH_LAYERS = [];
 clientConfig.MOD_EE_POD_RELATION = null;
+clientConfig.MOD_EE_POD_DISPLAY_FIELDS = [];
 clientConfig.MOD_EE_POD_COLOR = '#0000FF';
 clientConfig.MOD_EE_POD_WIDTH = 5;
