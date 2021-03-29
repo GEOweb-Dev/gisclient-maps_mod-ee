@@ -46,7 +46,6 @@ window.GCComponents["Layers"].addLayer('layer-ee_circuit-highlight', {
     styleMap: new OpenLayers.StyleMap({
         'default': {
             fill: false,
-            fillColor: "red",
             fillOpacity: 0.7,
             hoverFillColor: clientConfig.MOD_EE_CIRCUIT_COLOR,
             hoverFillOpacity: 0.9,
@@ -299,7 +298,9 @@ window.GCComponents["Layers"].addLayer('layer-ee_pod-highlight', {
         }
         var mod_ee_ToolbarControl = this.map.getControlsBy('gc_id', 'control-mod-ee-toolbar');
         if (mod_ee_ToolbarControl.length == 1) {
-            mod_ee_ToolbarControl[0].controls[3].deactivate();
+            if (mod_ee_ToolbarControl[0].controls.length > 1) {
+                mod_ee_ToolbarControl[0].controls[3].deactivate();
+            }
         }
         return false;
     },
@@ -366,8 +367,9 @@ window.GCComponents["Controls"].addControl('control-mod-ee-toolbar', function(ma
                             window.GCComponents.Functions.modEESearchPanel.call(this, clientConfig.MOD_EE_LINE_LAYERS, clientConfig.MOD_EE_LINE_SEARCH_LAYERS, clientConfig.MOD_EE_LINE_SEARCH_FIELDS, window.GCComponents.Functions.modEEHighlight, 'Ricerca Circuito/Sezione', 'layer-ee_circuit-highlight');
                         }
                     }
-                ),
-                new OpenLayers.Control(
+                )];
+            if (clientConfig.MOD_EE_POD_LAYERS !== null && clientConfig.MOD_EE_POD_LAYERS.length > 0) {
+                controls = controls.concat([new OpenLayers.Control(
                     {
                         ctrl: this,
                         type: OpenLayers.Control.TYPE_BUTTON ,
@@ -413,8 +415,8 @@ window.GCComponents["Controls"].addControl('control-mod-ee-toolbar', function(ma
                             },
                         }
                     }
-                ),
-            ];
+                )]);
+            }
 
             this.addControls(controls);
             OpenLayers.Control.Panel.prototype.draw.apply(this)
@@ -471,7 +473,9 @@ window.GCComponents["SideToolbar.Buttons"].addButton (
                 var mod_ee_ToolbarControl = this.map.getControlsBy('gc_id', 'control-mod-ee-toolbar');
                 if (mod_ee_ToolbarControl.length == 1) {
                     mod_ee_ToolbarControl[0].activate();
-                    mod_ee_ToolbarControl[0].controls[3].deactivate();
+                    if (mod_ee_ToolbarControl[0].controls.length > 1) {
+                        mod_ee_ToolbarControl[0].controls[3].deactivate();
+                    }  
                 }
             }
             if (typeof(sidebarPanel.handleEvent) !== 'undefined')
