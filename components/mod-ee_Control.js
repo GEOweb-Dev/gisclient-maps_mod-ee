@@ -33,8 +33,13 @@ $(function(){
                     panelElement.setAttribute('actionvalue',  'mod-ee_showPanel');
                     panelElement.innerHTML = 'N.A.';
                     var elFeature = objQueryToolbar.findFeature(featureId);
-                    window.GCComponents.Functions.modEEDisplayCircuit(elFeature, panelElement);
-                    window.GCComponents.Functions.modEEDisplaySection(elFeature, panelElement);
+                    if (clientConfig.MOD_EE_SUBSTATION_LAYERS.includes(featureTypeName)) {
+                        window.GCComponents.Functions.modEEDisplaySubstationCircuits(elFeature, panelElement);
+                    }
+                    else {
+                        window.GCComponents.Functions.modEEDisplayCircuit(elFeature, panelElement);
+                        window.GCComponents.Functions.modEEDisplaySection(elFeature, panelElement);
+                    }
                 };
             }
         }
@@ -367,7 +372,22 @@ window.GCComponents["Controls"].addControl('control-mod-ee-toolbar', function(ma
                             window.GCComponents.Functions.modEESearchPanel.call(this, clientConfig.MOD_EE_LINE_LAYERS, clientConfig.MOD_EE_LINE_SEARCH_LAYERS, clientConfig.MOD_EE_LINE_SEARCH_FIELDS, window.GCComponents.Functions.modEEHighlight, 'Ricerca Circuito/Sezione', 'layer-ee_circuit-highlight');
                         }
                     }
-                )];
+                )
+            ];
+            if (clientConfig.MOD_EE_SUBSTATION_LAYERS !== null && clientConfig.MOD_EE_SUBSTATION_LAYERS.length > 0) {
+                controls = controls.concat([new OpenLayers.Control(
+                    {
+                        ctrl: this,
+                        type: OpenLayers.Control.TYPE_BUTTON ,
+                        iconclass:"glyphicon-white glyphicon-folder-close",
+                        text:"Cabine",
+                        title:"Cabine",
+                        trigger: function () {
+                            window.GCComponents.Functions.modEESearchPanel.call(this, clientConfig.MOD_EE_LINE_LAYERS, clientConfig.MOD_EE_SUBSTATION_SEARCH_LAYERS, clientConfig.MOD_EE_SUBSTATION_SEARCH_FIELDS, window.GCComponents.Functions.modEEHighlight, 'Ricerca Circuito per Cabina', 'layer-ee_circuit-highlight', null, clientConfig.MOD_EE_SUBSTATION_CIRCUIT_SEARCH_FIELD, clientConfig.MOD_EE_SUBSTATION_CIRCUIT_RELATION);
+                        }
+                    }
+                )]);
+            }
             if (clientConfig.MOD_EE_POD_LAYERS !== null && clientConfig.MOD_EE_POD_LAYERS.length > 0) {
                 controls = controls.concat([new OpenLayers.Control(
                     {
@@ -428,8 +448,11 @@ window.GCComponents["Controls"].addControl('control-mod-ee-toolbar', function(ma
             this.div.appendChild(sectPanel);
             var sectPanelHeader = document.createElement("div");
             sectPanelHeader.setAttribute('id', 'mod_ee_circuit_panel_header');
-            sectPanelHeader.innerHTML = '<a href="#" id="ee-mod_panel_toggle"><span id="ee-mod_panel_toggle_span" class="icon-hide-panel"></span></a><span>Circuito Selezionato</span>'
+            sectPanelHeader.innerHTML = '<a href="#" id="ee-mod_panel_toggle"><span id="ee-mod_panel_toggle_span" class="icon-hide-panel"></span></a><span id="mod_ee_circuit_panel_title">Circuito Selezionato</span>'
             sectPanel.appendChild(sectPanelHeader);
+            var sectPanelParentContent = document.createElement("div");
+            sectPanelParentContent.setAttribute('id', 'mod_ee_circuit_panel_parent_content');
+            sectPanel.appendChild(sectPanelParentContent);
             var sectPanelContent = document.createElement("div");
             sectPanelContent.setAttribute('id', 'mod_ee_circuit_panel_content');
             sectPanel.appendChild(sectPanelContent);
@@ -438,11 +461,13 @@ window.GCComponents["Controls"].addControl('control-mod-ee-toolbar', function(ma
                 if ($("#ee-mod_panel_toggle_span").hasClass('icon-hide-panel')) {
                     $("#ee-mod_panel_toggle_span").removeClass('icon-hide-panel');
                     $("#ee-mod_panel_toggle_span").addClass('icon-show-panel');
+                    $('#mod_ee_circuit_panel_parent_content').css('display', 'none');
                     $('#mod_ee_circuit_panel_content').css('display', 'none');
                 }
                 else {
                     $("#ee-mod_panel_toggle_span").removeClass('icon-show-panel');
                     $("#ee-mod_panel_toggle_span").addClass('icon-hide-panel');
+                    $('#mod_ee_circuit_panel_parent_content').css('display', 'block');
                     $('#mod_ee_circuit_panel_content').css('display', 'block');
                 }
             });
@@ -474,8 +499,8 @@ window.GCComponents["SideToolbar.Buttons"].addButton (
                 if (mod_ee_ToolbarControl.length == 1) {
                     mod_ee_ToolbarControl[0].activate();
                     if (mod_ee_ToolbarControl[0].controls.length > 1) {
-                        mod_ee_ToolbarControl[0].controls[3].deactivate();
-                    }  
+                        mod_ee_ToolbarControl[0].controls[4].deactivate();
+                    }
                 }
             }
             if (typeof(sidebarPanel.handleEvent) !== 'undefined')

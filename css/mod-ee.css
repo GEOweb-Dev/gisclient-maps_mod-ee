@@ -36,6 +36,11 @@
     text-indent: -9999px;
 }
 
+.mod-ee_substation-circuit-selected span.icon-highlight {
+    background-color: #aaaaaa;
+    background-image: url("../../resources/img/glyphicons-halflings-white.png") !important;
+}
+
 .mod-ee_circuit-section span.icon-filter {
     display: inline-block;
     width: 14px;
@@ -81,11 +86,23 @@
     float: right;
 }
 
+#mod_ee_circuit_panel_parent_content div {
+    display: flow-root;
+}
+
+#mod_ee_circuit_panel_parent_content span.circuit_data_header {
+    float: left;
+}
+
+#mod_ee_circuit_panel_parent_content span.circuit_data_content {
+    float: right;
+}
+
 #mod_ee_circuit_panel_header {
     margin-bottom: : 5px;
 }
 
-#mod_ee_circuit_panel_header span.icon-hide-panel {
+#mod_ee_circuit_panel span.icon-hide-panel {
     float: left;
     display: inline-block;
     color: #FFFFFF;
@@ -102,7 +119,7 @@
     text-indent: -9999px;
 }
 
-#mod_ee_circuit_panel_header span.icon-show-panel {
+#mod_ee_circuit_panel span.icon-show-panel {
     float: left;
     display: inline-block;
     color: #FFFFFF;
@@ -117,4 +134,41 @@
     background-position: -456px -72px;
     overflow: hidden;
     text-indent: -9999px;
+}
+
+#mod_ee_circuit_panel span.ee-mod_panel_circuit_separator {
+    display: inline-block;
+    width: 350px;
+    border-top: 1px solid #ccc;
+}
+
+.modEEfields1nRow label {
+    font-weight: 100 !important;
+    margin-left: 10px;
+}
+
+.modEEfields1nRow .olButton {
+    background-color: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: inline-block;
+    outline: medium none;
+    text-decoration: none;
+    margin:4px 2px 4px 4px;
+    padding: 2px 4px 0px 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.modEEfields1nRow .olButton span {
+    color: #FFFFFF;
+    margin-left: 3px;
+}
+
+.modEEfields1nRow .eeType7Select span:before {
+    content: 'Seleziona tutto';
+}
+
+.modEEfields1nRow .eeType7Unselect span:before {
+    content: 'Deseleziona tutto';
 }
