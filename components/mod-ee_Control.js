@@ -296,15 +296,12 @@ window.GCComponents["Layers"].addLayer('layer-ee_pod-highlight', {
         var fields = ['ST_XMin(ST_GeomFromText(gc_geom))', 'ST_XMax(ST_GeomFromText(gc_geom))', 'ST_YMin(ST_GeomFromText(gc_geom))', 'ST_YMax(ST_GeomFromText(gc_geom))'];
         var ops = ['>','<','>','<'];
         var values = [selectionBox.left,selectionBox.right,selectionBox.bottom,selectionBox.top];
-        for (var k = 0; k < clientConfig.MOD_EE_POD_LAYERS.length; k++) {
-            var fTypeK = GisClientMap.getFeatureType(clientConfig.MOD_EE_POD_LAYERS[k]);
-            if(!fTypeK) continue;
-            window.GCComponents.Functions.modEEHighlight.call(this,clientConfig.MOD_EE_POD_LAYERS[k],fields,values,'layer-ee_pod-highlight',ops,clientConfig.MOD_EE_POD_RELATION);
-        }
+        window.GCComponents.Functions.modEEHighlight.call(this,clientConfig.MOD_EE_POD_LAYERS,fields,values,'layer-ee_pod-highlight',ops,clientConfig.MOD_EE_POD_RELATION);
+
         var mod_ee_ToolbarControl = this.map.getControlsBy('gc_id', 'control-mod-ee-toolbar');
         if (mod_ee_ToolbarControl.length == 1) {
             if (mod_ee_ToolbarControl[0].controls.length > 1) {
-                mod_ee_ToolbarControl[0].controls[3].deactivate();
+                mod_ee_ToolbarControl[0].controls[4].deactivate();
             }
         }
         return false;
@@ -383,7 +380,7 @@ window.GCComponents["Controls"].addControl('control-mod-ee-toolbar', function(ma
                         text:"Cabine",
                         title:"Cabine",
                         trigger: function () {
-                            window.GCComponents.Functions.modEESearchPanel.call(this, clientConfig.MOD_EE_LINE_LAYERS, clientConfig.MOD_EE_SUBSTATION_SEARCH_LAYERS, clientConfig.MOD_EE_SUBSTATION_SEARCH_FIELDS, window.GCComponents.Functions.modEEHighlight, 'Ricerca Circuito per Cabina', 'layer-ee_circuit-highlight', null, clientConfig.MOD_EE_SUBSTATION_CIRCUIT_SEARCH_FIELD, clientConfig.MOD_EE_SUBSTATION_CIRCUIT_RELATION);
+                            window.GCComponents.Functions.modEESearchPanel.call(this, clientConfig.MOD_EE_LINE_LAYERS, clientConfig.MOD_EE_SUBSTATION_SEARCH_LAYERS, clientConfig.MOD_EE_SUBSTATION_SEARCH_FIELDS, window.GCComponents.Functions.modEEHighlight, 'Ricerca Circuito per Cabina', 'layer-ee_circuit-highlight', null, clientConfig.MOD_EE_SUBSTATION_CIRCUIT_RELATION, clientConfig.MOD_EE_SUBSTATION_CIRCUIT_SEARCH_FIELD, clientConfig.MOD_EE_SUBSTATION_CIRCUIT_FIELD_LABEL);
                         }
                     }
                 )]);
