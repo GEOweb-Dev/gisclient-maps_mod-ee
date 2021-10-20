@@ -300,7 +300,7 @@ window.GCComponents["Layers"].addLayer('layer-ee_pod-highlight', {
 
         var mod_ee_ToolbarControl = this.map.getControlsBy('gc_id', 'control-mod-ee-toolbar');
         if (mod_ee_ToolbarControl.length == 1) {
-            if (mod_ee_ToolbarControl[0].controls.length > 1) {
+            if (mod_ee_ToolbarControl[0].controls.length > 2) {
                 mod_ee_ToolbarControl[0].controls[4].deactivate();
             }
         }
@@ -495,7 +495,7 @@ window.GCComponents["SideToolbar.Buttons"].addButton (
                 var mod_ee_ToolbarControl = this.map.getControlsBy('gc_id', 'control-mod-ee-toolbar');
                 if (mod_ee_ToolbarControl.length == 1) {
                     mod_ee_ToolbarControl[0].activate();
-                    if (mod_ee_ToolbarControl[0].controls.length > 1) {
+                    if (mod_ee_ToolbarControl[0].controls.length > 2) {
                         mod_ee_ToolbarControl[0].controls[4].deactivate();
                     }
                 }
