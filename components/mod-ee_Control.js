@@ -372,7 +372,7 @@ window.GCComponents["Controls"].addControl('control-mod-ee-toolbar', function(ma
                 )
             ];
             if (clientConfig.MOD_EE_SUBSTATION_LAYERS !== null && clientConfig.MOD_EE_SUBSTATION_LAYERS.length > 0) {
-                controls = controls.concat([new OpenLayers.Control(
+                controls = [new OpenLayers.Control(
                     {
                         ctrl: this,
                         type: OpenLayers.Control.TYPE_BUTTON ,
@@ -383,7 +383,7 @@ window.GCComponents["Controls"].addControl('control-mod-ee-toolbar', function(ma
                             window.GCComponents.Functions.modEESearchPanel.call(this, clientConfig.MOD_EE_LINE_LAYERS, clientConfig.MOD_EE_SUBSTATION_SEARCH_LAYERS, clientConfig.MOD_EE_SUBSTATION_SEARCH_FIELDS, window.GCComponents.Functions.modEEHighlight, 'Ricerca Circuito per Cabina', 'layer-ee_circuit-highlight', null, clientConfig.MOD_EE_SUBSTATION_CIRCUIT_RELATION, clientConfig.MOD_EE_SUBSTATION_CIRCUIT_SEARCH_FIELD, clientConfig.MOD_EE_SUBSTATION_CIRCUIT_FIELD_LABEL);
                         }
                     }
-                )]);
+                )].concat(controls);
             }
             if (clientConfig.MOD_EE_POD_LAYERS !== null && clientConfig.MOD_EE_POD_LAYERS.length > 0) {
                 controls = controls.concat([new OpenLayers.Control(

@@ -804,7 +804,9 @@ window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
                 $('#mod_ee_circuit_panel_parent_content').html(panelParentContent);
             }
         }
-        $.each(layer.circuitsList, function(idx, circuit) {
+        var arrCircuitsList = Object.keys(layer.circuitsList).map(function (key) { return key; }).sort();;
+        $.each(arrCircuitsList, function(idx, circuitIDX) {
+            var circuit = layer.circuitsList[circuitIDX];
             var sectionHeader = '';
             var circID = circuit[clientConfig.MOD_EE_CIRCUIT_FIELD_ID];
             panelContent += '<div><a href="#" class="ee-mod_panel_circuit_toggle" circID="'+circID+'"><span class="ee-mod_panel_circuit_toggle_icon icon-hide-panel" style="margin-left: 10px;"></span></a><span class="ee-mod_panel_circuit_separator"></span></div>';
@@ -952,13 +954,13 @@ window.GCComponents.Functions.modEEClear = function() {
 window.GCComponents.Functions.modEEShowRelation = function (featureType, dataTable, relationName) {
     var fType = GisClientMap.getFeatureType(featureType),
         len = fType.properties.length, i, property,
-        table = '<table><thead><tr>',
+        table = '<table id="ee-rel-table"><thead><tr>',
         exportLinks = ' <a href="#" class="reportTbl_export podTbl_export" action="xls"><img src="../../resources/themes/icons/xls.gif">&nbsp;Esporta in Excel</a>'
                     + ' <a href="#" class="reportTbl_export podTbl_export" action="pdf" ><img src="../../resources/themes/icons/acrobat.gif">&nbsp;Esporta in PDF</a>',
         data = [], fields = [], tmpArr, col, j,
         result, value, title;
+    var eeRelContent = exportLinks + ' <div id="ee-rel-content"></div>';
     var selectControls = GisClientMap.map.getControlsBy('gc_id', 'control-querytoolbar');
-
     for(i = 0; i < len; i++) {
         property = fType.properties[i];
 
@@ -999,7 +1001,11 @@ window.GCComponents.Functions.modEEShowRelation = function (featureType, dataTab
     }
     table += '</tbody></table>';
 
-    $('#DetailsWindow div.modal-body').html(exportLinks+table);
+    $('#DetailsWindow div.modal-body').css('overflow', 'visible');
+    $('#DetailsWindow div.modal-body').html(eeRelContent);
+    $('#ee-rel-content').css('height', $('#map').height()-120);
+    $('#ee-rel-content').css('overflow', 'auto');
+    $('#ee-rel-content').html(table);
     $('#DetailsWindow h4.modal-title').html('Tabella POD');
     $('.podTbl_export').click(function() {
         var action = this.getAttribute('action');
@@ -1057,4 +1063,12 @@ window.GCComponents.InitFunctions.modEEInit = function() {
     $('.panel-clearresults').click(function(event) {
         window.GCComponents.Functions.modEEClear();
     });
+    var observer = new MutationObserver(function (mutations) {
+        var tblH = $('#ee-rel-table').height();
+        var mapH = $('#map').height()-100;
+        if (tblH > 0 && tblH < mapH)
+            $('#ee-rel-content').css('height', tblH + 20);
+    });
+    var config = { childList: true, subtree: true };
+    observer.observe(document.getElementById('DetailsWindow'), config);
 }
