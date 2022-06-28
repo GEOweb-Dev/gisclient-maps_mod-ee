@@ -706,15 +706,17 @@ window.GCComponents.Functions.modEEHighlight = function (layerName, idField, idV
                             }
                             if (result.hasOwnProperty(clientConfig.MOD_EE_CIRCUIT_COLOR_FIELD)) {
                                 var resColor = result[clientConfig.MOD_EE_CIRCUIT_COLOR_FIELD];
-                                if (/^#[0-9A-F]{6}$/i.test(resColor)) {
-                                    circuits[circuitId]['circuit_color'] = resColor;
-                                }
-                                else {
-                                    var outColor = resColor.match(/^(\d+)[, ]+(\d+)[, ]+(\d+)$/);
-                                    function hex(x) {
-                                        return ("0" + parseInt(x).toString(16)).slice(-2);
+                                if (resColor) {
+                                    if (/^#[0-9A-F]{6}$/i.test(resColor)) {
+                                        circuits[circuitId]['circuit_color'] = resColor;
                                     }
-                                    circuits[circuitId]['circuit_color'] = "#" + hex(outColor[1]) + hex(outColor[2]) + hex(outColor[3]);
+                                    else {
+                                        var outColor = resColor.match(/^(\d+)[, ]+(\d+)[, ]+(\d+)$/);
+                                        function hex(x) {
+                                            return ("0" + parseInt(x).toString(16)).slice(-2);
+                                        }
+                                        circuits[circuitId]['circuit_color'] = "#" + hex(outColor[1]) + hex(outColor[2]) + hex(outColor[3]);
+                                    }
                                 }
                             }
                             circuits[circuitId]['sections'] = [];
@@ -850,9 +852,13 @@ window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
                 $('#mod_ee_circuit_panel_parent_content').html(panelParentContent);
             }
         }
-        var arrCircuitsList = Object.keys(layer.circuitsList).map(function (key) { return key; }).sort();;
+        var arrCircuitsList = Object.keys(layer.circuitsList).map(function (key) { return key; }).sort();
+        var displayColorToolbar = false;
         $.each(arrCircuitsList, function(idx, circuitIDX) {
             var circuit = layer.circuitsList[circuitIDX];
+            if (circuit.hasOwnProperty('circuit_color')) {
+                displayColorToolbar = true;
+            }
             var sectionHeader = '';
             var circID = circuit[clientConfig.MOD_EE_CIRCUIT_FIELD_ID];
             panelContent += '<div><a href="#" class="ee-mod_panel_circuit_toggle" circID="'+circID+'"><span class="ee-mod_panel_circuit_toggle_icon icon-hide-panel" style="margin-left: 10px;"></span></a>\
@@ -880,6 +886,9 @@ window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
             }
             panelContent += '</div>';
         });
+        if (!displayColorToolbar) {
+            $('#mod_ee_circuit_panel_toolbar_color').css('display', 'none');
+        }
         $('#mod_ee_circuit_panel_content').html(panelContent);
         var panelSize = $('#mod_ee_circuit_panel').height();
         var maxPanelSize = $('#map').height() - 50;
@@ -923,7 +932,7 @@ window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
             }
             else if ($(this).hasClass("ee-mod_panel_circuit_colorpicker")) {
                 var circID = this.getAttribute('circID');
-                var currColor = $("#ee-mod_panel_circuit_color_"+circID).css('color');
+                var currColor = $("span[id='ee-mod_panel_circuit_color_"+circID+"']").css('color');
                 if (currColor == 'rgb(255, 255, 255)') {
                     alert('Impossibile impostare il colore di un circuito non evidenziato');
                     return;
@@ -961,7 +970,6 @@ window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
         });
         GisClientMap.map.getLayersByName('layer-ee_section-highlight')[0].destroyFeatures();
         $('#mod_ee_circuit_panel').css('display', 'block');
-        debugger;
     }
 };
 
