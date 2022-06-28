@@ -20,6 +20,7 @@ clientConfig.MOD_EE_SECTION_DISPLAY_FIELDS = [];
 clientConfig.MOD_EE_CIRCUIT_LAYERS = {};
 clientConfig.MOD_EE_SECTION_LAYERS = {};
 clientConfig.MOD_EE_CIRCUIT_COLOR = '#FFA500';
+clientConfig.MOD_EE_CIRCUIT_COLOR_FIELD: '';
 clientConfig.MOD_EE_CIRCUIT_WIDTH = 5;
 clientConfig.MOD_EE_SECTION_COLOR = '#FF00FF';
 clientConfig.MOD_EE_SECTION_WIDTH = 5;

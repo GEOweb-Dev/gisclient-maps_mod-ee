@@ -71,6 +71,11 @@
     display: flow-root;
 }
 
+*::-ms-backdrop,#mod_ee_circuit_panel_content div {
+    display: table;
+    width: 410px;
+}
+
 #mod_ee_circuit_panel_content div.circuit_section_container {
     border: 1px solid white;
     border-radius: 5px;
@@ -88,6 +93,11 @@
 
 #mod_ee_circuit_panel_parent_content div {
     display: flow-root;
+}
+
+*::-ms-backdrop,#mod_ee_circuit_panel_parent_content div {
+    display: table;
+    width: 410px;
 }
 
 #mod_ee_circuit_panel_parent_content span.circuit_data_header {
@@ -142,6 +152,36 @@
     border-top: 1px solid #ccc;
 }
 
+#mod_ee_circuit_panel_toolbar_color {
+    font-size: 14px;
+}
+
+#map-toolbar-mod-ee-colorpicker {
+    z-index: 1000;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.6);
+    margin: 2px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+}
+
+#mod_ee_color-picker {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    border-radius: 0px !important;
+}
+
+.modEEColorPickerButtons {
+    text-align: center;
+}
+
+.modEEColorPickerClose {
+    margin-left: 10px;
+    float: right;
+    margin-bottom: 10px;
+    margin-top: 5px;
+}
+
 .modEEfields1nRow label {
     font-weight: 100 !important;
     margin-left: 10px;
@@ -171,4 +211,12 @@
 
 .modEEfields1nRow .eeType7Unselect span:before {
     content: 'Deseleziona tutto';
+}
+
+.text-gradient {
+  color: darkblue;
+  background: linear-gradient(
+            to right, #f32170, #ff6b08, #00FFFF);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
 }

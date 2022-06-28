@@ -52,42 +52,44 @@ window.GCComponents["Layers"].addLayer('layer-ee_circuit-highlight', {
         'default': {
             fill: false,
             fillOpacity: 0.7,
-            hoverFillColor: clientConfig.MOD_EE_CIRCUIT_COLOR,
+            hoverFillColor: "${circuit_color}",
             hoverFillOpacity: 0.9,
-            fillColor: clientConfig.MOD_EE_CIRCUIT_COLOR,
-            strokeColor: clientConfig.MOD_EE_CIRCUIT_COLOR,
+            fillColor: "${circuit_color}",
+            strokeColor: "${circuit_color}",
             strokeOpacity: 0.7,
             strokeWidth: clientConfig.MOD_EE_CIRCUIT_WIDTH,
             strokeLinecap: "round",
             strokeDashstyle: "solid",
-            hoverStrokeColor: clientConfig.MOD_EE_CIRCUIT_COLOR,
+            hoverStrokeColor: "${circuit_color}",
             hoverStrokeOpacity: 1,
             hoverStrokeWidth: clientConfig.MOD_EE_CIRCUIT_WIDTH,
             pointRadius: clientConfig.MOD_EE_CIRCUIT_WIDTH,
             hoverPointRadius: 1,
             hoverPointUnit: "%",
             pointerEvents: "visiblePainted",
-            cursor: "inherit"
+            cursor: "inherit",
+            display: "${circuit_display}"
         },
         'select': {
             fill: true,
-            fillColor: clientConfig.MOD_EE_CIRCUIT_COLOR,
+            fillColor: "${circuit_color}",
             fillOpacity: 0.9,
-            hoverFillColor: clientConfig.MOD_EE_CIRCUIT_COLOR,
+            hoverFillColor: "${circuit_color}",
             hoverFillOpacity: 0.9,
-            strokeColor: clientConfig.MOD_EE_CIRCUIT_COLOR,
+            strokeColor: "${circuit_color}",
             strokeOpacity: 1,
             strokeWidth: clientConfig.MOD_EE_CIRCUIT_WIDTH,
             strokeLinecap: "round",
             strokeDashstyle: "solid",
-            hoverStrokeColor: clientConfig.MOD_EE_CIRCUIT_COLOR,
+            hoverStrokeColor: "${circuit_color}",
             hoverStrokeOpacity: 1,
             hoverStrokeWidth: clientConfig.MOD_EE_CIRCUIT_WIDTH,
             pointRadius: 8,
             hoverPointRadius: 1,
             hoverPointUnit: "%",
             pointerEvents: "visiblePainted",
-            cursor: "pointer"
+            cursor: "pointer",
+            display: "${circuit_display}"
         },
         'temporary': {
             fill: true,
@@ -107,7 +109,8 @@ window.GCComponents["Layers"].addLayer('layer-ee_circuit-highlight', {
             hoverPointRadius: 1,
             hoverPointUnit: "%",
             pointerEvents: "visiblePainted",
-            cursor: "pointer"
+            cursor: "pointer",
+            display: "${circuit_display}"
         }
     })
 }, {
@@ -443,6 +446,18 @@ window.GCComponents["Controls"].addControl('control-mod-ee-toolbar', function(ma
             var sectPanel = document.createElement("div");
             sectPanel.setAttribute('id', 'mod_ee_circuit_panel');
             this.div.appendChild(sectPanel);
+            // **** Circuit panel toolbar (color toggle)
+            var sectPanelToolbar = document.createElement("div");
+            sectPanelToolbar.setAttribute('id', 'mod_ee_circuit_panel_toolbar_color');
+            sectPanelToolbar.innerHTML = 'Colore evidenziazione: \
+                                        <div style="display: inline-block;"><a class="searchButton olLikeButton olControlButtonItemActive modEECircuitColorSwitch btn" title="Default">\
+                                        <span class="glyphicon-white glyphicon-stop" style="color:'+clientConfig.MOD_EE_CIRCUIT_COLOR+';"></span><span>Default</span></a>\
+                                        </div>\
+                                        <div style="display: inline-block;"><a class="searchButton olLikeButton modEECircuitColorSwitch btn" title="Circuito">\
+                                        <span class="glyphicon-white glyphicon-stop text-gradient"></span><span>Circuito</span></a>\
+                                        </div><div><span class="ee-mod_panel_circuit_separator"></span></div>';
+            sectPanel.appendChild(sectPanelToolbar);
+
             var sectPanelHeader = document.createElement("div");
             sectPanelHeader.setAttribute('id', 'mod_ee_circuit_panel_header');
             sectPanelHeader.innerHTML = '<a href="#" id="ee-mod_panel_toggle"><span id="ee-mod_panel_toggle_span" class="icon-hide-panel"></span></a><span id="mod_ee_circuit_panel_title">Circuito Selezionato</span>'
@@ -466,6 +481,35 @@ window.GCComponents["Controls"].addControl('control-mod-ee-toolbar', function(ma
                     $("#ee-mod_panel_toggle_span").addClass('icon-hide-panel');
                     $('#mod_ee_circuit_panel_parent_content').css('display', 'block');
                     $('#mod_ee_circuit_panel_content').css('display', 'block');
+                }
+            });
+            $("#mod_ee_circuit_panel_toolbar_color a").click(function() {
+                event.stopPropagation();
+                if ($(this).hasClass('olControlButtonItemActive')) {
+                    return;
+                }
+                $("#mod_ee_circuit_panel_toolbar_color a").removeClass('olControlButtonItemActive');
+                $(this).addClass('olControlButtonItemActive');
+                $('#map-toolbar-mod-ee-colorpicker').css('display', 'none');
+                var layer = GisClientMap.map.getLayersByName('layer-ee_circuit-highlight')[0];
+                var btnOp = this.getAttribute('title');
+                if (btnOp == 'Default') {
+                    window.GCComponents.Functions.switchCircuitColor(layer, clientConfig.MOD_EE_CIRCUIT_COLOR);
+                    var arrCircuitsList = Object.keys(layer.circuitsList).map(function (key) { return key; }).sort();;
+                    $.each(arrCircuitsList, function(idx, circuitIDX) {
+                        if ($('#ee-mod_panel_circuit_color_'+circuitIDX).css('color') != 'rgb(255, 255, 255)') {
+                            $('#ee-mod_panel_circuit_color_'+circuitIDX).css('color', clientConfig.MOD_EE_CIRCUIT_COLOR);
+                        }
+                    });
+                }
+                else {
+                    window.GCComponents.Functions.switchCircuitColor(layer);
+                    var arrCircuitsList = Object.keys(layer.circuitsList).map(function (key) { return key; }).sort();;
+                    $.each(arrCircuitsList, function(idx, circuitIDX) {
+                        if ($('#ee-mod_panel_circuit_color_'+circuitIDX).css('color') != 'rgb(255, 255, 255)') {
+                            $('#ee-mod_panel_circuit_color_'+circuitIDX).css('color', layer.circuitsList[circuitIDX].circuit_color);
+                        }
+                    });
                 }
             });
         }

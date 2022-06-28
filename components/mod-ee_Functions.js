@@ -691,6 +691,8 @@ window.GCComponents.Functions.modEEHighlight = function (layerName, idField, idV
                         geometry = result.gc_geom && OpenLayers.Geometry.fromWKT(result.gc_geom);
                         if(!geometry) continue;
                         delete result.gc_geom;
+                        result.circuit_color = clientConfig.MOD_EE_CIRCUIT_COLOR;
+                        result.circuit_display = 'block';
                         feature = new OpenLayers.Feature.Vector(geometry, result);
                         feature.featureTypeName = jqXHR.featureType;
                         features.push(feature);
@@ -701,6 +703,19 @@ window.GCComponents.Functions.modEEHighlight = function (layerName, idField, idV
                             circuits[circuitId] = {};
                             for (var j=0; j<clientConfig.MOD_EE_CIRCUIT_DISPLAY_FIELDS.length; j++) {
                                 circuits[circuitId][clientConfig.MOD_EE_CIRCUIT_DISPLAY_FIELDS[j]] = result[clientConfig.MOD_EE_CIRCUIT_DISPLAY_FIELDS[j]];
+                            }
+                            if (result.hasOwnProperty(clientConfig.MOD_EE_CIRCUIT_COLOR_FIELD)) {
+                                var resColor = result[clientConfig.MOD_EE_CIRCUIT_COLOR_FIELD];
+                                if (/^#[0-9A-F]{6}$/i.test(resColor)) {
+                                    circuits[circuitId]['circuit_color'] = resColor;
+                                }
+                                else {
+                                    var outColor = resColor.match(/^(\d+)[, ]+(\d+)[, ]+(\d+)$/);
+                                    function hex(x) {
+                                        return ("0" + parseInt(x).toString(16)).slice(-2);
+                                    }
+                                    circuits[circuitId]['circuit_color'] = "#" + hex(outColor[1]) + hex(outColor[2]) + hex(outColor[3]);
+                                }
                             }
                             circuits[circuitId]['sections'] = [];
                         }
@@ -745,15 +760,36 @@ window.GCComponents.Functions.modEEHighlight = function (layerName, idField, idV
     }
 };
 
+window.GCComponents.Functions.switchCircuitColor = function (layer, color, circuit) {
+    for (var i=0; i < layer.features.length; i++) {
+        if (circuit) {
+            if (layer.features[i].attributes[clientConfig.MOD_EE_CIRCUIT_FIELD_ID] != circuit) {
+                continue;
+            }
+        }
+        if (color) {
+            layer.features[i].attributes['circuit_color'] = color;
+        }
+        else {
+            layer.features[i].attributes['circuit_color'] = layer.circuitsList[layer.features[i].attributes[clientConfig.MOD_EE_CIRCUIT_FIELD_ID]].circuit_color;
+        }
+    }
+    layer.redraw();
+};
+
 window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
     if (layer == null) {
         $('#mod_ee_circuit_panel_parent_content').html('');
         $('#mod_ee_circuit_panel_content').html('');
+        $('#mod_ee_circuit_panel').css('height', 'auto');
         $('#mod_ee_circuit_panel').css('display', 'none');
+        $('#map-toolbar-mod-ee-colorpicker').css('display', 'none');
         GisClientMap.map.getLayersByName('layer-ee_circuit-highlight')[0].destroyFeatures();
         GisClientMap.map.getLayersByName('layer-ee_section-highlight')[0].destroyFeatures();
         return;
     }
+    $('#mod_ee_circuit_panel').css('height', 'auto');
+    $('#map-toolbar-mod-ee-colorpicker').css('display', 'none');
     var fType = GisClientMap.getFeatureType(layer.features[0].featureTypeName);
     if (section === true) {
         var circuitAttr = layer.features[0].attributes;
@@ -779,7 +815,17 @@ window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
         $("#mod_ee_circuit_panel_section_div_"+sectionId).append(sectionPanelContent);
     }
     else {
-        var panelTitle = Object.keys(layer.circuitsList).length > 1 ? 'Circuiti Selezionati': 'Circuito Selezionato';
+        var panelTitle = '';
+        if (Object.keys(layer.circuitsList).length > 1) {
+            panelTitle = 'Circuiti Selezionati';
+            $('#mod_ee_circuit_panel_toolbar_color').css('display', 'block');
+            $("#mod_ee_circuit_panel_toolbar_color a").removeClass('olControlButtonItemActive');
+            $("#mod_ee_circuit_panel_toolbar_color a[title='Default']").addClass('olControlButtonItemActive');
+        }
+        else {
+            panelTitle = 'Circuito Selezionato';
+            $('#mod_ee_circuit_panel_toolbar_color').css('display', 'none')
+        }
         $('#mod_ee_circuit_panel_title').html(panelTitle);
         $('#mod_ee_circuit_panel_parent_content').html('');
         $('#mod_ee_circuit_panel_content').html('');
@@ -809,7 +855,9 @@ window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
             var circuit = layer.circuitsList[circuitIDX];
             var sectionHeader = '';
             var circID = circuit[clientConfig.MOD_EE_CIRCUIT_FIELD_ID];
-            panelContent += '<div><a href="#" class="ee-mod_panel_circuit_toggle" circID="'+circID+'"><span class="ee-mod_panel_circuit_toggle_icon icon-hide-panel" style="margin-left: 10px;"></span></a><span class="ee-mod_panel_circuit_separator"></span></div>';
+            panelContent += '<div><a href="#" class="ee-mod_panel_circuit_toggle" circID="'+circID+'"><span class="ee-mod_panel_circuit_toggle_icon icon-hide-panel" style="margin-left: 10px;"></span></a>\
+                            <span class="ee-mod_panel_circuit_separator"></span>\
+                            <a href="#" class="ee-mod_panel_circuit_colorpicker" circID="'+circID+'"><span id="ee-mod_panel_circuit_color_'+circID+'" class="glyphicon-white glyphicon-stop" style="margin-right: 10px; color: '+clientConfig.MOD_EE_CIRCUIT_COLOR+';"></span></a></div>';
             panelContent += '<div id="mod_ee_circuit_panel_'+circID+'">';
             for (var i=0; i<fType.properties.length; i++) {
                 if (clientConfig.MOD_EE_CIRCUIT_DISPLAY_FIELDS.some(function(arrVal) {
@@ -833,21 +881,73 @@ window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
             panelContent += '</div>';
         });
         $('#mod_ee_circuit_panel_content').html(panelContent);
+        var panelSize = $('#mod_ee_circuit_panel').height();
+        var maxPanelSize = $('#map').height() - 50;
+        if (panelSize > maxPanelSize) {
+            $('#mod_ee_circuit_panel').css('height', maxPanelSize);
+            $('#mod_ee_circuit_panel').css('overflow', 'auto');
+        }
         $("#mod_ee_circuit_panel_content a").click(function() {
             event.stopPropagation();
+            $('#map-toolbar-mod-ee-colorpicker').css('display', 'none');
             if ($(this).hasClass("ee-mod_panel_circuit_toggle")) {
+                var circDisplay = '';
+                var circColor = null;
                 var circID = this.getAttribute('circID');
                 var spanItem = $(this).find('.ee-mod_panel_circuit_toggle_icon')[0];
                 if ($(spanItem).hasClass('icon-hide-panel')) {
                     $(spanItem).removeClass('icon-hide-panel');
                     $(spanItem).addClass('icon-show-panel');
-                    $('#mod_ee_circuit_panel_'+circID).css('display', 'none');
+                    circDisplay = 'none';
+                    circColor = '#FFFFFF';
+
                 }
                 else {
                     $(spanItem).removeClass('icon-show-panel');
                     $(spanItem).addClass('icon-hide-panel');
-                    $('#mod_ee_circuit_panel_'+circID).css('display', 'block');
+                    circDisplay = 'block';
                 }
+                $('#mod_ee_circuit_panel_'+circID).css('display', circDisplay);
+                // **** Hide/Show circuit highlight
+                for (var i=0; i < layer.features.length; i++) {
+                    if (layer.features[i].attributes[clientConfig.MOD_EE_CIRCUIT_FIELD_ID] == circID) {
+                        layer.features[i].attributes['circuit_display'] = circDisplay;
+                        if (circColor === null) {
+                            circColor = layer.features[i].attributes['circuit_color'];
+                        }
+                    }
+                }
+                $('#ee-mod_panel_circuit_color_'+circID).css('color', circColor);
+                layer.redraw();
+                //window.GCComponents.Functions.switchCircuitColor(layer,layer.circuitsList[circID].circuit_color,circID);
+            }
+            else if ($(this).hasClass("ee-mod_panel_circuit_colorpicker")) {
+                var circID = this.getAttribute('circID');
+                var currColor = $("#ee-mod_panel_circuit_color_"+circID).css('color');
+                if (currColor == 'rgb(255, 255, 255)') {
+                    alert('Impossibile impostare il colore di un circuito non evidenziato');
+                    return;
+                }
+                var currColorRGB = currColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+                var x = $(this).position().left + 90;
+                var y = $(this).position().top - 120;
+                if (y < 5) {
+                    y = 5;
+                }
+                if ($('#mod_ee_circuit_panel').get(0).scrollHeight > $('#mod_ee_circuit_panel').get(0).clientHeight) {
+                    x += 15;
+                }
+                $('#map-toolbar-mod-ee-colorpicker').css({left:x,top:y});
+                var noteColorPicker = ColorPicker(
+                    document.getElementById('mod_ee_color-picker'),
+                    function(hex, hsv, rgb) {
+                        $('#mod-ee_circuit_setcolor').css('color', hex);
+                        $('#mod-ee_circuit_setcolor').attr('hexColor', hex);
+                    });
+                noteColorPicker.setRgb({r:currColorRGB[1], g:currColorRGB[2], b:currColorRGB[3]});
+                $('#mod-ee_circuit_setcolor').css('color', currColor);
+                $('#mod-ee_circuit_setcolor').attr('circID', circID);
+                $('#map-toolbar-mod-ee-colorpicker').css('display', 'block');
             }
             else {
                 var filterId = this.getAttribute('filterid');
@@ -861,6 +961,7 @@ window.GCComponents.Functions.modEESectionsPanel = function (layer, section) {
         });
         GisClientMap.map.getLayersByName('layer-ee_section-highlight')[0].destroyFeatures();
         $('#mod_ee_circuit_panel').css('display', 'block');
+        debugger;
     }
 };
 
@@ -1071,4 +1172,27 @@ window.GCComponents.InitFunctions.modEEInit = function() {
     });
     var config = { childList: true, subtree: true };
     observer.observe(document.getElementById('DetailsWindow'), config);
+
+    $('#map-toolbar-mod-ee-colorpicker').css('display', 'none');
+    $('#map-toolbar-mod-ee-colorpicker').html('<div><a href="#" class="ee-mod_colorpicker_close"><span class="glyphicon-white glyphicon-remove modEEColorPickerClose"></span></a></div>\
+                                            <div id="mod_ee_color-picker" class="olToolbarControl cp-default"></div>\
+                                            <div class="modEEColorPickerButtons">\
+                                            <a class="searchButton olLikeButton modEECircuitColorPicker btn">\
+                                            <span id="mod-ee_circuit_setcolor" class="glyphicon-white glyphicon-stop" circID=""></span><span>Imposta Colore</span></a>\
+                                            </div>');
+    $("#map-toolbar-mod-ee-colorpicker a").click(function() {
+        event.stopPropagation();
+        if ($(this).hasClass("modEECircuitColorPicker")) {
+            var circColor = $('#mod-ee_circuit_setcolor').attr('hexColor');
+            var circID = $('#mod-ee_circuit_setcolor').attr('circID');
+            var layer = GisClientMap.map.getLayersByName('layer-ee_circuit-highlight')[0];
+            $('#ee-mod_panel_circuit_color_'+circID).css('color', circColor);
+            window.GCComponents.Functions.switchCircuitColor(layer, circColor, circID);
+            $('#map-toolbar-mod-ee-colorpicker').css('display', 'none');
+            $("#mod_ee_circuit_panel_toolbar_color a").removeClass('olControlButtonItemActive');
+        }
+        else {
+            $('#map-toolbar-mod-ee-colorpicker').css('display', 'none');
+        }
+    });
 }
