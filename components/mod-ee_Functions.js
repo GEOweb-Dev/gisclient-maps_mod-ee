@@ -1194,7 +1194,7 @@ window.GCComponents.InitFunctions.modEEInit = function() {
             var circColor = $('#mod-ee_circuit_setcolor').attr('hexColor');
             var circID = $('#mod-ee_circuit_setcolor').attr('circID');
             var layer = GisClientMap.map.getLayersByName('layer-ee_circuit-highlight')[0];
-            $('#ee-mod_panel_circuit_color_'+circID).css('color', circColor);
+            $("span[id='ee-mod_panel_circuit_color_"+circID+"']").css('color', circColor);
             window.GCComponents.Functions.switchCircuitColor(layer, circColor, circID);
             $('#map-toolbar-mod-ee-colorpicker').css('display', 'none');
             $("#mod_ee_circuit_panel_toolbar_color a").removeClass('olControlButtonItemActive');
