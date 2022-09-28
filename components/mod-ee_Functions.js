@@ -1019,7 +1019,7 @@ window.GCComponents.Functions.modEEClear = function() {
     GisClientMap.map.getLayersByName('layer-ee_pod-highlight')[0].dataTable = [];
     GisClientMap.map.getLayersByName('layer-ee_pod-highlight')[0].circuitsList = {};
     GisClientMap.map.getLayersByName('layer-ee_pod-highlight')[0].parentData = {};
-    GisClientMap.map.getLayersByName('layer-ee_pod-highlight')[0].destroyFeatures();
+    GisClientMap.map.getLayersByName('layer-ee_pod-highlight')[0].destroyFeatures(null,{silent:true});
 
     var selectPod = GisClientMap.map.getControlsBy('gc_id', 'control-mod-ee-selectpod')[0];
     selectPod.deactivate();
